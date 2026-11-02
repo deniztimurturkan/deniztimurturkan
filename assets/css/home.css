@@ -1,0 +1,147 @@
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   HERO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.hero {
+  padding-block: clamp(3.5rem, 10vw, 6rem) 0;
+}
+
+.hero-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.headshot {
+  width: 88px;
+  height: 88px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+}
+
+.hero-name {
+  font-size: clamp(1.9rem, 5vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.hero-tagline {
+  font-size: clamp(1.15rem, 2.5vw, 1.3rem);
+  line-height: 1.55;
+  max-width: 36rem;
+}
+.hero-tagline em { font-style: normal; color: var(--color-text-muted); }
+
+.hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md) var(--space-lg);
+  margin-top: var(--space-xl);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+.hero-links a::after { content: ' ↗'; color: var(--color-text-muted); }
+.hero-links a[href^="mailto"]::after { content: ''; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   WORK LIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.work-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.work-item {
+  position: relative;
+  padding: var(--space-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast);
+}
+.work-item:has(.work-title a):hover { border-color: var(--color-accent); }
+
+.work-meta {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.work-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--space-sm);
+}
+/* Makes the whole card clickable while keeping one real link */
+.work-title a::after { content: ''; position: absolute; inset: 0; }
+.work-title a:hover { color: var(--color-accent); }
+
+.work-desc {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-md);
+}
+
+.work-cta {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-accent);
+  margin-top: var(--space-md);
+}
+
+.featured-badge { color: var(--color-accent); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   EXPERIENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: 9.5rem 1fr;
+  gap: var(--space-lg);
+  padding-block: var(--space-lg);
+  border-top: 1px solid var(--color-border);
+}
+.timeline-item:last-child { border-bottom: 1px solid var(--color-border); }
+
+.timeline-role { font-weight: 600; }
+.timeline-org  { color: var(--color-text-muted); }
+.timeline-desc { margin-top: var(--space-sm); color: var(--color-text-muted); font-size: 0.97rem; }
+
+@media (max-width: 600px) {
+  .timeline-item { grid-template-columns: 1fr; gap: var(--space-xs); }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ABOUT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.about-text p + p { margin-top: var(--space-md); }
+
+.about-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+.about-facts dt { margin-bottom: var(--space-xs); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CONTACT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.contact-email {
+  display: inline-block;
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin-top: var(--space-md);
+}
