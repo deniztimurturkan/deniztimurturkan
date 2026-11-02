@@ -1,0 +1,58 @@
+:root {
+  /* ── Colors (light) ── */
+  --color-bg:         #fbfaf8;
+  --color-surface:    #ffffff;
+  --color-text:       #1a1a1a;
+  --color-text-muted: #6b6862;
+  --color-border:     #e7e4df;
+  --color-accent:     #c2410c;   /* signal orange */
+  --color-accent-soft: rgba(194, 65, 12, 0.08);
+
+  /* ── Typography ── */
+  --font-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* ── Spacing scale ── */
+  --space-xs:  0.25rem;   /*  4px */
+  --space-sm:  0.5rem;    /*  8px */
+  --space-md:  1rem;      /* 16px */
+  --space-lg:  1.5rem;    /* 24px */
+  --space-xl:  2rem;      /* 32px */
+  --space-2xl: 3rem;      /* 48px */
+  --space-3xl: 5rem;      /* 80px */
+
+  /* ── Layout ── */
+  --max-width: 760px;
+  --gutter:    clamp(1rem, 5vw, 2rem);
+
+  /* ── Transitions ── */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+
+  /* ── Radii ── */
+  --radius-sm: 4px;
+  --radius-md: 10px;
+}
+
+/* ── Colors (dark) — follows the OS unless the toggle forces light ── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg:          #111110;
+    --color-surface:     #191918;
+    --color-text:        #ecebe8;
+    --color-text-muted:  #9a968f;
+    --color-border:      #2a2927;
+    --color-accent:      #fb8a4c;
+    --color-accent-soft: rgba(251, 138, 76, 0.1);
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg:          #111110;
+  --color-surface:     #191918;
+  --color-text:        #ecebe8;
+  --color-text-muted:  #9a968f;
+  --color-border:      #2a2927;
+  --color-accent:      #fb8a4c;
+  --color-accent-soft: rgba(251, 138, 76, 0.1);
+}

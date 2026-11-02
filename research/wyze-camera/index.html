@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reverse Engineering the Wyze Camera — Deniz Timurturkan</title>
+  <meta name="description" content="Georgia Tech embedded security research: decoding the Wyze Cam V2 sensor RF protocol and demonstrating replay and unsigned-firmware weaknesses.">
+  <meta property="og:title"       content="Reverse Engineering the Wyze Camera's RF Protocol">
+  <meta property="og:description" content="Georgia Tech embedded security research, Fall 2024.">
+  <meta property="og:type"        content="article">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23c2410c'/><text x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'>dt</text></svg>">
+
+  <script>try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/variables.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/case-study.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="../../" class="site-name">deniz<span>.</span>timurturkan</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../../#work" class="nav-section">Work</a>
+        <a href="../../#experience" class="nav-section">Experience</a>
+        <a href="../../#about" class="nav-section">About</a>
+        <a href="../../#contact">Contact</a>
+        <button class="theme-toggle" aria-label="Toggle dark mode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="case">
+      <a href="../../#work" class="back-link">← All work</a>
+
+      <p class="label">Research · Georgia Tech Embedded Systems Cyber Security VIP</p>
+      <h1 class="case-title">Reverse engineering the Wyze camera's RF protocol</h1>
+      <p class="case-lede">How our team decoded a proprietary sensor radio protocol from firmware, and showed that the camera system accepts replayed sensor packets and unsigned firmware.</p>
+
+      <div class="case-actions">
+        <a href="https://escs.vip.gatech.edu/sites/default/files/2025-01/Wyze_Fall_2024_Final_Paper.pdf" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Read the paper (PDF) ↗</a>
+        <a href="https://escs.vip.gatech.edu/publications" class="btn" target="_blank" rel="noopener noreferrer">ESCS publications page ↗</a>
+      </div>
+
+      <dl class="case-facts">
+        <div><dt class="label">Role</dt><dd>Subteam co-lead (team of 8)</dd></div>
+        <div><dt class="label">Timeline</dt><dd>Aug 2023 – May 2025</dd></div>
+        <div><dt class="label">Device</dt><dd>Wyze Cam V2 + sensors</dd></div>
+        <div><dt class="label">Tools</dt><dd>Ghidra, J-Link, GNU Radio, USRP N210, URH, Scapy</dd></div>
+      </dl>
+
+      <div class="case-body">
+
+        <h2>The question</h2>
+        <p>Wyze cameras are popular in homes and small businesses, and they have a history of security problems, including an authentication bypass (CVE-2019-9564) and a stack buffer overflow leading to remote code execution (CVE-2019-12266). Our team wanted to look at a less-studied part of the system: the wireless link between the camera and its motion and contact sensors.</p>
+        <p>The long-term goal was to reverse engineer that radio protocol by hand, then try to reach the same results with RF fuzzing, to see whether fuzzing is a practical alternative to manual reverse engineering for RF devices.</p>
+
+        <h2>The system</h2>
+        <p>The Wyze Cam V2 kit has four boards:</p>
+        <ul>
+          <li><strong>Contact and motion sensors</strong>: each uses a TI CC1310 microcontroller and sends a packet over RF when its magnetic switch or PIR sensor changes state.</li>
+          <li><strong>Sensor bridge</strong>: a CC1310 running Wyze's proprietary firmware. It receives sensor traffic and passes it to the camera over USB. This firmware was our main target.</li>
+          <li><strong>Camera mainboard</strong>: an Ingenic T20 MIPS processor running embedded Linux, which relays events to the Wyze cloud and app. We got root by soldering headers onto an open serial port and cracking the root password.</li>
+        </ul>
+
+        <h2>Decoding the packet format</h2>
+        <p>The CC1310 supports several standard radio modes, but Wyze uses its proprietary mode. Working from TI's technical reference manual and SDK samples, we matched SDK structures such as <code>rfc_CMD_PROP_TX_ADV_s</code> to the disassembled bridge firmware in Ghidra. That let us find and label the functions behind RF setup, the receive queue, and packet processing, and recover the on-air packet layout:</p>
+
+        <div class="packet" role="img" aria-label="Packet layout: 2-byte preamble, 32-bit sync word 0x5555904E, 16-bit header, 3-byte payload, CRC">
+          <div><b>Preamble</b><span>2 bytes</span></div>
+          <div class="hl"><b>Sync word</b><span>0x5555904E</span></div>
+          <div><b>Header</b><span>16 bits</span></div>
+          <div class="hl"><b>Payload</b><span>3 bytes</span></div>
+          <div><b>CRC</b><span>integrity check</span></div>
+        </div>
+        <p class="label figure-caption">Wyze sensor packet as recovered from firmware. The CRC covers the payload but not the sync word or header.</p>
+
+        <h2>From static to live analysis</h2>
+        <p>Static analysis only goes so far, so we moved to stepping through the bridge's packet-processing routine while it ran. We started with Ghidra's debugger, then switched to J-Link on a remote test bed, where we could write directly to the device's memory and registers while it handled real traffic. That showed us how the routine checks radio status (<code>PROP_DONE_OK</code>), reads the 2-byte header (bits 0–10 hold the length, bit 11 the whitening flag, bit 12 the CRC length), and uses individual bits in the first payload bytes as flags that steer control flow. Knowing those bits is what makes it possible to craft packets that drive the device in specific, controlled ways.</p>
+
+        <h2>What we found</h2>
+        <ul>
+          <li><strong>Replay attack.</strong> We captured sensor traffic with GNU Radio and replayed it to the sensor bridge with an Ettus USRP N210. The bridge acknowledged the replayed packets as genuine. The sensor's 16-bit event counter didn't help, because a replayed packet simply carries the counter value it was captured with. We used Universal Radio Hacker to modulate and send arbitrary packets.</li>
+          <li><strong>Unsigned firmware.</strong> We modified the stock camera firmware and installed it on the device, which shows Wyze doesn't sign its firmware. That's another way around the system's security controls.</li>
+        </ul>
+
+        <h2>My part</h2>
+        <!-- TODO (Deniz): adjust this to exactly what you personally did -->
+        <p>As subteam co-lead, I ran our check-in meetings and kept the presentations and the paper on schedule. On the technical side, I worked on static and dynamic analysis of the bridge firmware in Ghidra, on RF analysis of both transmit and receive, and on SDR spoofing tools written in Scapy to simulate the sensors and test how the bridge handles crafted traffic.</p>
+
+        <h2>What's next</h2>
+        <p>The research continues with a testbed for RF fuzzing: sending malformed packets to the bridge and comparing what fuzzing uncovers with what we found by hand.</p>
+
+        <p class="credit">
+          <strong>Team:</strong> Michael Edoigiawerie, Varsha Jacob, Joshua Muehring, Deniz Timurturkan, Andrew Graffeo, Ben Cordova, Tanay Rajkumar, Blake Wood. Advisor: Jake Ashmore.<br>
+          "Wyze Camera Fall 2024," Georgia Tech Embedded Systems Cyber Security, December 2024.
+        </p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="label">&copy; 2026 Deniz Timurturkan</p>
+      <p class="label"><a href="../../" class="link">Home</a></p>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/theme.js"></script>
+</body>
+</html>

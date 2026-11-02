@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deniz Timurturkan — Software Engineer</title>
+  <meta name="description" content="Deniz Timurturkan — software engineer building security and AI systems end to end, from frontend and APIs to cloud infrastructure. Georgia Tech CS, embedded security research.">
+  <meta property="og:title"       content="Deniz Timurturkan — Software Engineer">
+  <meta property="og:description" content="Software engineer building security and AI systems end to end, from frontend and APIs to cloud infrastructure.">
+  <meta property="og:type"        content="website">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23c2410c'/><text x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'>dt</text></svg>">
+
+  <!-- Apply saved theme before paint to avoid a flash -->
+  <script>try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/global.css">
+  <link rel="stylesheet" href="assets/css/home.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="./" class="site-name">deniz<span>.</span>timurturkan</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="#work" class="nav-section">Work</a>
+        <a href="#experience" class="nav-section">Experience</a>
+        <a href="#about" class="nav-section">About</a>
+        <a href="#contact">Contact</a>
+        <button class="theme-toggle" aria-label="Toggle dark mode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Hero -->
+    <section class="hero" aria-label="Introduction">
+      <div class="hero-top">
+        <img src="assets/images/headshot.jpg" alt="Deniz Timurturkan" class="headshot">
+        <div>
+          <h1 class="hero-name">Deniz Timurturkan</h1>
+          <p class="label">Software Engineer · Atlanta, GA</p>
+        </div>
+      </div>
+      <p class="hero-tagline">
+        I build security and AI systems end to end at Travelers, from the frontend through APIs and auth to the cloud and container infrastructure underneath.
+        <em>Before that, I took apart IoT cameras at Georgia Tech to see how they break.</em>
+      </p>
+      <div class="hero-links">
+        <a href="https://github.com/deniztimurturkan" class="link" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://www.linkedin.com/in/deniztimurturkan/" class="link" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="assets/Deniz_Timurturkan_Resume.pdf" class="link" target="_blank" rel="noopener">Résumé</a>
+        <a href="mailto:deniztimurturkan@gmail.com" class="link">deniztimurturkan@gmail.com</a>
+      </div>
+    </section>
+
+    <!-- Selected work -->
+    <section class="section" id="work" aria-labelledby="work-heading">
+      <h2 class="section-heading label" id="work-heading">selected work</h2>
+
+      <div class="work-list">
+
+        <article class="work-item">
+          <div class="work-meta">
+            <span class="label featured-badge">Research · Published</span>
+            <span class="label">2023 – 2025</span>
+          </div>
+          <h3 class="work-title"><a href="research/wyze-camera/">Reverse engineering the Wyze camera's RF protocol</a></h3>
+          <p class="work-desc">Co-led an 8-person Georgia Tech research team that took apart a Wyze Cam V2 and its wireless sensors. We decoded the proprietary radio protocol from firmware in Ghidra, then showed the system accepts replayed sensor packets and unsigned firmware.</p>
+          <ul class="tags">
+            <li>Ghidra</li><li>SDR</li><li>GNU Radio</li><li>Scapy</li><li>ARM</li><li>RF</li>
+          </ul>
+          <p class="work-cta">Read the case study →</p>
+        </article>
+
+        <article class="work-item">
+          <div class="work-meta">
+            <span class="label">Travelers · Cybersecurity</span>
+            <span class="label">2025 –</span>
+          </div>
+          <h3 class="work-title">AI-assisted Threat Modeling</h3>
+          <p class="work-desc">Contributed to an internal app that surfaces security findings and recommends mitigations automatically, so teams across the company catch vulnerabilities earlier in development.</p>
+          <ul class="tags">
+            <li>TypeScript</li><li>React</li><li>Python</li><li>AWS</li><li>LLMs</li>
+          </ul>
+        </article>
+
+        <article class="work-item">
+          <div class="work-meta">
+            <span class="label">Travelers · Cybersecurity</span>
+            <span class="label">2025 –</span>
+          </div>
+          <h3 class="work-title">Document summarization with Bedrock agents &amp; MCP</h3>
+          <p class="work-desc">Built a full-stack app and MCP server that turns long PDFs into structured, readable summaries, cutting the time people spend on manual review.</p>
+          <ul class="tags">
+            <li>AWS Bedrock</li><li>MCP</li><li>Lambda</li><li>Python</li><li>React</li>
+          </ul>
+        </article>
+
+        <article class="work-item">
+          <div class="work-meta">
+            <span class="label">Travelers · Cybersecurity</span>
+            <span class="label">2026</span>
+          </div>
+          <h3 class="work-title">API proxy with role-based authentication</h3>
+          <p class="work-desc">Built the proxy that connects a frontend to its backend, declaring the API endpoints and handling role-based authentication for requests between them.</p>
+          <ul class="tags">
+            <li>API design</li><li>Proxy</li><li>Auth</li><li>RBAC</li>
+          </ul>
+        </article>
+
+        <article class="work-item">
+          <div class="work-meta">
+            <span class="label">Travelers · Cybersecurity</span>
+            <span class="label">2025 –</span>
+          </div>
+          <h3 class="work-title">Access control &amp; cloud infrastructure</h3>
+          <p class="work-desc">Worked on the company's role-based access control (RBAC) systems, and provisioned AWS infrastructure in Terraform, including least-privilege IAM roles for EKS service accounts and automated Secrets Manager setup.</p>
+          <ul class="tags">
+            <li>RBAC</li><li>Terraform</li><li>EKS</li><li>IAM</li><li>Kubernetes</li>
+          </ul>
+        </article>
+
+        <article class="work-item">
+          <div class="work-meta">
+            <span class="label">Travelers · Cybersecurity</span>
+            <span class="label">2025 –</span>
+          </div>
+          <h3 class="work-title">Security data visualizer</h3>
+          <p class="work-desc">Built a dashboard for security data, backed by a scheduled job that keeps the data fresh without anyone having to refresh it by hand.</p>
+          <ul class="tags">
+            <li>TypeScript</li><li>Data viz</li><li>Cron</li><li>AWS</li>
+          </ul>
+        </article>
+
+        <article class="work-item">
+          <div class="work-meta">
+            <span class="label">Georgia Tech · Course project</span>
+            <span class="label">Android</span>
+          </div>
+          <h3 class="work-title">Frogger</h3>
+          <p class="work-desc">A Crossy Road–style Android game built with an Agile team: use-case and sequence diagrams, prototype screens, and animated gameplay structured around SOLID and GRASP principles.</p>
+          <ul class="tags">
+            <li>Java</li><li>Android Studio</li><li>Agile</li>
+          </ul>
+        </article>
+
+        <!-- Template for a new project — copy, fill in, and add a link on the title if there is a repo or page.
+        <article class="work-item">
+          <div class="work-meta">
+            <span class="label">Personal project</span>
+            <span class="label">2026</span>
+          </div>
+          <h3 class="work-title"><a href="https://github.com/deniztimurturkan/REPO" target="_blank" rel="noopener noreferrer">Project name</a></h3>
+          <p class="work-desc">Two or three sentences: the problem, what you built, and what happened.</p>
+          <ul class="tags">
+            <li>Tech</li><li>Tech</li>
+          </ul>
+        </article>
+        -->
+
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section class="section" id="experience" aria-labelledby="experience-heading">
+      <h2 class="section-heading label" id="experience-heading">experience</h2>
+
+      <ol class="timeline">
+        <li class="timeline-item">
+          <span class="label">Jun 2025 – Now</span>
+          <div>
+            <p class="timeline-role">Software Engineer</p>
+            <p class="timeline-org">Travelers · Atlanta, GA</p>
+            <p class="timeline-desc">Shipped 6 full-stack applications on the Cybersecurity team, from scratch to production. Review code for junior engineers, and have presented our AI automation work to 200+ colleagues and to the CTO and CISO.</p>
+          </div>
+        </li>
+        <li class="timeline-item">
+          <span class="label">May 2024 – May 2025</span>
+          <div>
+            <p class="timeline-role">SWE / QA Automation Intern</p>
+            <p class="timeline-org">Amwins · Charlotte, NC</p>
+            <p class="timeline-desc">Wrote 100+ automated UI tests (about 10% of the company's test suite at the time), and API scripts with SQL checks to validate data from front end to back end.</p>
+          </div>
+        </li>
+        <li class="timeline-item">
+          <span class="label">Aug 2023 – May 2025</span>
+          <div>
+            <p class="timeline-role">Embedded Security Research Co-Lead</p>
+            <p class="timeline-org">Georgia Tech VIP · Atlanta, GA</p>
+            <p class="timeline-desc">Led an 8-person subteam doing firmware reverse engineering and RF analysis on IoT devices. <a href="research/wyze-camera/" class="link">Published research</a>.</p>
+          </div>
+        </li>
+        <li class="timeline-item">
+          <span class="label">May – Jul 2023</span>
+          <div>
+            <p class="timeline-role">Software Engineer Intern</p>
+            <p class="timeline-org">Br Mağazacılık · İzmir, Türkiye</p>
+            <p class="timeline-desc">Added multi-language support and new screens to an Android e-commerce app.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- About -->
+    <section class="section" id="about" aria-labelledby="about-heading">
+      <h2 class="section-heading label" id="about-heading">about</h2>
+
+      <div class="about-text">
+        <p>I studied Computer Science at Georgia Tech (B.S., May 2025), where I excelled in AI and Media threads. These days I work on the Cybersecurity team at Travelers, building security tools and AI automation across the whole stack: frontends, APIs and auth, and the cloud and container infrastructure they run on.</p>
+        <p>Outside of work, I speak English and Turkish, and I'm slowly learning German, Spanish, and Korean. I like to cook, play videogames, boulder, and spend time with friends/family.</p>
+      </div>
+
+      <dl class="about-facts">
+        <div>
+          <dt class="label">Languages</dt>
+          <dd>TypeScript, Python, Go, Java, Kotlin, C, SQL</dd>
+        </div>
+        <div>
+          <dt class="label">Cloud &amp; infra</dt>
+          <dd>AWS, Terraform, Kubernetes, Helm, Docker, ArgoCD</dd>
+        </div>
+        <div>
+          <dt class="label">Security</dt>
+          <dd>Ghidra, Snyk, Datadog, Dynatrace, SDR</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- Contact -->
+    <section class="section" id="contact" aria-labelledby="contact-heading">
+      <h2 class="section-heading label" id="contact-heading">contact</h2>
+      <p>The best way to reach me is email. I'm always happy to talk about new technologies, videogames, or just to say hi!</p>
+      <a href="mailto:deniztimurturkan@gmail.com" class="contact-email link">deniztimurturkan@gmail.com</a>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="label">&copy; 2026 Deniz Timurturkan</p>
+      <p class="label">
+        <a href="https://github.com/deniztimurturkan" class="link" target="_blank" rel="noopener noreferrer">GitHub</a> ·
+        <a href="https://www.linkedin.com/in/deniztimurturkan/" class="link" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="assets/js/theme.js"></script>
+</body>
+</html>
