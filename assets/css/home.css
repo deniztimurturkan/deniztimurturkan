@@ -2,20 +2,16 @@
    HERO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--space-2xl);
   padding-block: clamp(3.5rem, 10vw, 6rem) 0;
 }
 
-.hero-top {
-  display: flex;
-  align-items: center;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-xl);
-}
-
 .headshot {
-  width: 88px;
-  height: 88px;
-  flex-shrink: 0;
+  width: 176px;
+  height: 176px;
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid var(--color-border);
@@ -28,12 +24,28 @@
   line-height: 1.15;
 }
 
-.hero-tagline {
+.hero-intro {
+  margin-top: var(--space-lg);
   font-size: clamp(1.15rem, 2.5vw, 1.3rem);
-  line-height: 1.55;
-  max-width: 36rem;
+  line-height: 1.5;
 }
-.hero-tagline em { font-style: normal; color: var(--color-text-muted); }
+
+.hero-tagline {
+  margin-top: var(--space-md);
+  line-height: 1.65;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 600px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+  .headshot {
+    width: 128px;
+    height: 128px;
+  }
+}
 
 .hero-links {
   display: flex;

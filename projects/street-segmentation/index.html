@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Street Scene Segmentation — Deniz Timurturkan</title>
+  <meta name="description" content="Georgia Tech computer vision project: labeling every pixel of driving footage as road, car, pedestrian, pole, and more with a PSPNet built on ResNet-50.">
+  <meta property="og:title"       content="Labeling every pixel of a street scene">
+  <meta property="og:description" content="Georgia Tech Computer Vision project, Fall 2024.">
+  <meta property="og:type"        content="article">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%236b2fa8'/><text x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'>dt</text></svg>">
+
+  <script>try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/variables.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/case-study.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="../../" class="site-name">deniz<span>.</span>timurturkan</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../../#work" class="nav-section">Work</a>
+        <a href="../../#experience" class="nav-section">Experience</a>
+        <a href="../../#about" class="nav-section">About</a>
+        <a href="../../#contact">Contact</a>
+        <button class="theme-toggle" aria-label="Toggle dark mode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="case">
+      <a href="../../#work" class="back-link">← All work</a>
+
+      <p class="label">Computer vision · Georgia Tech CS 4476</p>
+      <h1 class="case-title">Labeling every pixel of a street scene</h1>
+      <p class="case-lede">Before a self-driving car can decide what to do, it has to know what it's looking at. I trained a network that looks at a frame of driving footage and labels every pixel: road, sidewalk, car, pedestrian, pole, sky, and more.</p>
+
+      <!-- TODO (Deniz): add your 2x3 results figure here (ground truth on top, predictions below) from the Colab run. -->
+
+      <dl class="case-facts">
+        <div><dt class="label">Type</dt><dd>Individual course project</dd></div>
+        <div><dt class="label">Timeline</dt><dd>Fall 2024</dd></div>
+        <div><dt class="label">Data</dt><dd>CamVid driving video, 11 classes</dd></div>
+        <div><dt class="label">Model</dt><dd>PSPNet, ResNet-50 backbone</dd></div>
+      </dl>
+
+      <div class="case-body">
+
+        <h2>The problem</h2>
+        <p>Classifying a whole image ("this is a street") is the easy version. Semantic segmentation asks for a label on every single pixel, so the model has to know both <em>what</em> is in the scene and exactly <em>where</em> each thing ends. Thin objects like poles and signs, and small ones like pedestrians far away, are where models usually struggle.</p>
+        <p>The data was CamVid, 701 frames of driving footage from Cambridge labeled with 11 classes: building, tree, sky, car, sign, road, pedestrian, fence, pole, sidewalk, and bicyclist. Images were downsampled for training, which keeps most of the scene recognizable while making training practical on a single GPU.</p>
+
+        <h2>The approach</h2>
+        <p>I built the network up step by step, measuring mean intersection-over-union (mIoU) after each change to see what each idea was actually worth:</p>
+        <ul>
+          <li><strong>A simple segmentation net</strong> on a ResNet-50 backbone with a 1×1 convolution as the classifier, as a starting point.</li>
+          <li><strong>ImageNet pretraining</strong>, so the backbone starts out already knowing edges, textures, and objects.</li>
+          <li><strong>Data augmentation</strong>, randomly transforming the training images, since 701 images is a very small dataset.</li>
+          <li><strong>Dilated convolutions</strong>, which let the network see a wider area without shrinking the image so much that thin objects like poles disappear.</li>
+          <li><strong>A pyramid pooling module</strong>, PSPNet's key idea: pool features over the whole image and over 2×2, 3×3, and 6×6 grids, then combine them, so each pixel's label is informed by the scene around it. A car is more likely on the road than in the sky.</li>
+          <li><strong>An auxiliary loss</strong> on an intermediate layer, to give the deep network a stronger training signal.</li>
+        </ul>
+
+        <!-- TODO (Deniz): add a Results section with your training/validation mIoU for each step above and the per-class IoU for the simple net vs. PSPNet (from your Gradescope report). -->
+
+        <h2>What makes it hard</h2>
+        <p>Classes like road, sky, and buildings cover huge areas and are easy to get right. Poles, signs, pedestrians, and bicyclists cover few pixels and are often partly hidden, so a model can score well on average while still missing exactly the objects a car most needs to see. That's why per-class scores matter as much as the overall number.</p>
+
+        <p class="credit">
+          CS 4476 Computer Vision, Georgia Tech, Fall 2024. Dataset: CamVid (Brostow et al., University of Cambridge).<br>
+          Course code is not shared publicly, per the Georgia Tech Honor Code.
+        </p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="label">&copy; 2026 Deniz Timurturkan</p>
+      <p class="label"><a href="../../" class="link">Home</a></p>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/theme.js"></script>
+</body>
+</html>

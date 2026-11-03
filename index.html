@@ -43,21 +43,19 @@
 
     <!-- Hero -->
     <section class="hero" aria-label="Introduction">
-      <div class="hero-top">
-        <img src="assets/images/headshot.jpg" alt="Deniz Timurturkan" class="headshot">
-        <div>
-          <h1 class="hero-name">Deniz Timurturkan</h1>
-          <p class="label">Software Engineer · Atlanta, GA</p>
+      <img src="assets/images/headshot.jpg" alt="Deniz Timurturkan" class="headshot">
+      <div class="hero-text">
+        <h1 class="hero-name">Deniz Timurturkan</h1>
+        <p class="label">Software Engineer · Atlanta, GA</p>
+        <p class="hero-intro">Hi! I'm Deniz. I like building software end to end, and figuring out how things break.</p>
+        <p class="hero-tagline">
+          These days I build security and AI apps at Travelers, from the frontend through APIs and auth to the cloud infrastructure underneath. Before that, I took apart IoT cameras at Georgia Tech.
+        </p>
+        <div class="hero-links">
+          <a href="https://github.com/deniztimurturkan" class="link" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://www.linkedin.com/in/deniztimurturkan/" class="link" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="mailto:deniztimurturkan@gmail.com" class="link">deniztimurturkan@gmail.com</a>
         </div>
-      </div>
-      <p class="hero-tagline">
-        I've shipped 10 full-stack security and AI apps at Travelers, from the frontend through APIs and auth to the cloud and container infrastructure underneath.
-        <em>Before that, I took apart IoT cameras at Georgia Tech to see how they break.</em>
-      </p>
-      <div class="hero-links">
-        <a href="https://github.com/deniztimurturkan" class="link" target="_blank" rel="noopener noreferrer">GitHub</a>
-        <a href="https://www.linkedin.com/in/deniztimurturkan/" class="link" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a href="mailto:deniztimurturkan@gmail.com" class="link">deniztimurturkan@gmail.com</a>
       </div>
     </section>
 
@@ -102,6 +100,32 @@
           <p class="work-desc">Trained decision trees, random forests, and k-nearest neighbors to predict app popularity from store listings. Tuning exposed heavy overfitting, and k-NN ended up explaining about six times more of the variation than the tree models.</p>
           <ul class="tags">
             <li>Python</li><li>Machine learning</li><li>k-NN</li><li>Random forest</li>
+          </ul>
+          <p class="work-cta">Read the write-up →</p>
+        </article>
+
+        <article class="work-item">
+          <div class="work-meta">
+            <span class="label">Georgia Tech · Computer Vision</span>
+            <span class="label">2024</span>
+          </div>
+          <h3 class="work-title"><a href="projects/lidar-pointnet/">Classifying self-driving lidar objects with PointNet</a></h3>
+          <p class="work-desc">Trained a PointNet to classify 3D lidar point clouds from the Argoverse 2 dataset into 20 object types, from pedestrians to buses. It reached 63.5% test accuracy, nearly double a voxel-grid baseline.</p>
+          <ul class="tags">
+            <li>PyTorch</li><li>PointNet</li><li>Lidar</li><li>3D vision</li>
+          </ul>
+          <p class="work-cta">Read the write-up →</p>
+        </article>
+
+        <article class="work-item">
+          <div class="work-meta">
+            <span class="label">Georgia Tech · Computer Vision</span>
+            <span class="label">2024</span>
+          </div>
+          <h3 class="work-title"><a href="projects/street-segmentation/">Labeling every pixel of a street scene</a></h3>
+          <p class="work-desc">Built a PSPNet on a ResNet-50 backbone that labels every pixel of driving footage as road, car, pedestrian, pole, and more, adding one technique at a time to measure what each was worth.</p>
+          <ul class="tags">
+            <li>PyTorch</li><li>PSPNet</li><li>Segmentation</li><li>CamVid</li>
           </ul>
           <p class="work-cta">Read the write-up →</p>
         </article>
