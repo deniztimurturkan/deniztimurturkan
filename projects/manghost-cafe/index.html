@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manghost Cafe — Deniz Timurturkan</title>
+  <meta name="description" content="A 3D Unity restaurant game built by a five-person Georgia Tech team: role switching, NavMesh customer AI, and a queue-driven host stand.">
+  <meta property="og:title"       content="Manghost Cafe: a Unity restaurant game">
+  <meta property="og:description" content="Georgia Tech Video Game Design team project, Spring 2025.">
+  <meta property="og:type"        content="article">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%236b2fa8'/><text x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'>dt</text></svg>">
+
+  <script>try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/variables.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/case-study.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="../../" class="site-name">deniz<span>.</span>timurturkan</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../../#work" class="nav-section">Work</a>
+        <a href="../../#experience" class="nav-section">Experience</a>
+        <a href="../../#about" class="nav-section">About</a>
+        <a href="../../#contact">Contact</a>
+        <button class="theme-toggle" aria-label="Toggle dark mode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="case">
+      <a href="../../#work" class="back-link">← All work</a>
+
+      <p class="label">Game · Georgia Tech Video Game Design (CS 4455)</p>
+      <h1 class="case-title">Manghost Cafe</h1>
+      <p class="case-lede">A 3D restaurant game where you run a cafe for ghosts by yourself, switching between waiter and chef to seat, serve, and cook before the clock runs out.</p>
+
+      <!-- TODO (Deniz): add a gameplay clip or screenshots here, and a button linking to a playable build (e.g. itch.io) if you can export one. -->
+
+      <dl class="case-facts">
+        <div><dt class="label">Role</dt><dd>Gameplay programmer (team of 5)</dd></div>
+        <div><dt class="label">Timeline</dt><dd>Spring 2025</dd></div>
+        <div><dt class="label">Engine</dt><dd>Unity, C#</dd></div>
+        <div><dt class="label">Focus</dt><dd>Customer AI, queueing, host stand</dd></div>
+      </dl>
+
+      <div class="case-body">
+
+        <h2>The idea</h2>
+        <p>We pitched a cafe game in the spirit of <em>Overcooked</em>, with one twist: there is only one of you. The player swaps between staff roles, and each role can do only its own job. The waiter can seat customers and take and deliver orders but can't cook. The chef can blend smoothies and bake but can't talk to customers. The fun comes from deciding when to switch.</p>
+
+        <h2>How it plays</h2>
+        <ul>
+          <li><strong>Role switching.</strong> One key swaps control between the waiter and the chef, who stay in the world where you left them.</li>
+          <li><strong>Seating and serving.</strong> As the waiter, you seat whoever is at the front of the line, take their order at the table, then carry the finished smoothie over.</li>
+          <li><strong>Cooking under pressure.</strong> As the chef, you drop mangoes into the blender or oven and take them out in time. Leave food in too long and it burns, so it has to be thrown out and remade.</li>
+          <li><strong>Win or lose.</strong> Serve every customer before the timer runs out to win. A difficulty setting on the start screen changes the pace.</li>
+        </ul>
+
+        <h2>The customer AI</h2>
+        <p>Every ghost customer runs a small state machine on top of Unity's NavMesh pathfinding. Each state checks one condition and hands off to the next:</p>
+
+        <div class="packet" role="img" aria-label="Customer states in order: walking to host stand, waiting in line, walking to table, waiting for waiter, ordering, waiting for food, eating">
+          <div><b>Walk in</b><span>to host stand</span></div>
+          <div class="hl"><b>Wait in line</b><span>queue slot</span></div>
+          <div><b>Walk to table</b><span>NavMesh path</span></div>
+          <div><b>Wait</b><span>for waiter</span></div>
+          <div class="hl"><b>Order</b><span>smoothie</span></div>
+          <div><b>Wait</b><span>for food</span></div>
+          <div><b>Eat</b><span>then leave</span></div>
+        </div>
+        <p class="label figure-caption">Customer lifecycle. The highlighted states are the ones the player has to act on.</p>
+
+        <h2>The line and the host stand</h2>
+        <p>I wrote the queue. When a customer arrives, the line manager gives them the next free waiting spot. When the waiter seats the customer at the front, everyone behind moves up one spot and walks to their new position, so the line always looks tidy no matter how many ghosts arrive at once.</p>
+        <p>The host stand connects the player to that queue. When the waiter is standing at it and presses the seat key, the stand takes the first customer in line, picks a random free table, marks the seat as taken so two ghosts never share it, and sends the customer walking there.</p>
+
+        <h2>My part</h2>
+        <!-- TODO (Deniz): adjust this to exactly what you personally did -->
+        <p>I was the main author of the line manager and the host stand, and one of the main authors of the customer state machine. I also helped with the customer spawner, the camera, and the player controller, and built the first version of the cafe scene, the customer walkway, and the mango objects.</p>
+
+        <h2>What we learned</h2>
+        <p>We ran playtests with people outside the team as part of the course. <!-- TODO (Deniz): add one or two real findings from the playtest report here. --> Five people working in one Unity project also taught us a lot about splitting work cleanly: scripts that own a single job, like the queue or a seat, were the easiest to change without breaking someone else's work.</p>
+
+        <p class="credit">
+          <strong>Team MangoTank Games:</strong> Seung-a Baek, Jason Katz, Hojin Kim, Jiyoon Lee, Deniz Timurturkan.<br>
+          CS 4455 Video Game Design, Georgia Tech, Spring 2025.
+        </p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="label">&copy; 2026 Deniz Timurturkan</p>
+      <p class="label"><a href="../../" class="link">Home</a></p>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/theme.js"></script>
+</body>
+</html>

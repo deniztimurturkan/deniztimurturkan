@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Predicting App Popularity — Deniz Timurturkan</title>
+  <meta name="description" content="Georgia Tech machine learning project: predicting Google Play app popularity from app metadata with decision trees, random forests, and k-nearest neighbors.">
+  <meta property="og:title"       content="Predicting Google Play app popularity">
+  <meta property="og:description" content="Georgia Tech Machine Learning team project, Spring 2024.">
+  <meta property="og:type"        content="article">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%236b2fa8'/><text x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'>dt</text></svg>">
+
+  <script>try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/variables.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/case-study.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="../../" class="site-name">deniz<span>.</span>timurturkan</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../../#work" class="nav-section">Work</a>
+        <a href="../../#experience" class="nav-section">Experience</a>
+        <a href="../../#about" class="nav-section">About</a>
+        <a href="../../#contact">Contact</a>
+        <button class="theme-toggle" aria-label="Toggle dark mode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="case">
+      <a href="../../#work" class="back-link">← All work</a>
+
+      <p class="label">Machine learning · Georgia Tech CS 4641</p>
+      <h1 class="case-title">Predicting Google Play app popularity</h1>
+      <p class="case-lede">Can you tell how popular an app will be from its store listing alone? We trained tree-based and nearest-neighbor models to find out, and learned as much from where they failed as from where they worked.</p>
+
+      <dl class="case-facts">
+        <div><dt class="label">Role</dt><dd>Team member (team of 5)</dd></div>
+        <div><dt class="label">Timeline</dt><dd>Spring 2024</dd></div>
+        <div><dt class="label">Data</dt><dd>Google Play Store apps (Kaggle)</dd></div>
+        <div><dt class="label">Tools</dt><dd>Python</dd><!-- TODO (Deniz): add the libraries you used, e.g. pandas, scikit-learn --></div>
+      </dl>
+
+      <div class="case-body">
+
+        <h2>The question</h2>
+        <p>The app stores are saturated, and most new apps go nowhere. If listing details like category, size, and monetization could predict which apps will take off, that would help developers decide what to build and help investors decide what to back. We set out to test how far those details alone can go.</p>
+
+        <h2>The data</h2>
+        <p>We used a public Kaggle dataset of Google Play Store listings and built a single <strong>popularity score</strong> for each app by combining its number of installs with its average rating. To get the data ready, we:</p>
+        <ul>
+          <li>handled missing values, and dropped apps with no usable size;</li>
+          <li>converted app size from text into a number;</li>
+          <li>encoded categorical fields such as category and content rating;</li>
+          <li>split the apps into training and test sets.</li>
+        </ul>
+        <p>The features we kept were category, size, content rating, whether the app shows ads, and whether it has in-app purchases.</p>
+
+        <h2>Results</h2>
+        <p>We started with a decision tree and a random forest, then tried k-nearest neighbors. R² is the share of the variation in popularity a model explains: 1.0 would be perfect, 0 is no better than guessing the average.</p>
+
+        <div class="table-wrap">
+          <table class="results">
+            <thead>
+              <tr><th scope="col">Model</th><th scope="col">Test MSE</th><th scope="col">Test R²</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Decision tree</td><td class="num">0.0611</td><td class="num">0.045</td></tr>
+              <tr><td>Random forest</td><td class="num">0.0588</td><td class="num">0.080</td></tr>
+              <tr class="hl"><td>k-nearest neighbors (k = 19)</td><td class="num">—</td><td class="num">≈ 0.47</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="label figure-caption">The k-NN R² is read off our tuning curve, so it is approximate.</p>
+
+        <p>The tree models had low error but explained under 10% of the variation. Their low error mostly came from the fact that most apps have low popularity scores, so predicting "not very popular" is usually close. Nearest neighbors did much better, explaining nearly half of the variation on the test set.</p>
+
+        <h2>Tuning, and catching overfitting</h2>
+        <ul>
+          <li><strong>Tree depth.</strong> Training error kept falling as trees got deeper, but test error bottomed out around a depth of 13 and then rose again. Past that point the tree was memorizing the training data, not learning from it.</li>
+          <li><strong>Number of neighbors.</strong> With k = 1, the model scored about 0.92 R² on training data and almost 0 on test data, a textbook case of overfitting. As k grew, the two scores converged, and test R² climbed to about 0.47.</li>
+        </ul>
+        <!-- TODO (Deniz): the deck also shows a k-NN accuracy curve peaking near 93% around k = 10. If you remember what it was classifying (e.g. popular vs. not popular), add it here. -->
+
+        <h2>What drives popularity</h2>
+        <p>The random forest's feature importances show what the model leaned on most:</p>
+        <div class="table-wrap">
+          <table class="results">
+            <thead>
+              <tr><th scope="col">Feature</th><th scope="col">Importance</th></tr>
+            </thead>
+            <tbody>
+              <tr class="hl"><td>App size</td><td class="num">≈ 0.41</td></tr>
+              <tr><td>Category</td><td class="num">≈ 0.26</td></tr>
+              <tr><td>Ad supported</td><td class="num">≈ 0.16</td></tr>
+              <tr><td>In-app purchases</td><td class="num">≈ 0.10</td></tr>
+              <tr><td>Content rating</td><td class="num">≈ 0.07</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="label figure-caption">Read from our feature-importance chart.</p>
+
+        <h2>My part</h2>
+        <!-- TODO (Deniz): replace this with exactly what you personally did (e.g. preprocessing, a specific model, the tuning plots). -->
+        <p>I worked on the project from proposal to final report as one of five team members.</p>
+
+        <h2>What I'd do next</h2>
+        <p>Listing metadata alone only goes so far. The next steps we identified were gradient-boosted trees and a small neural network to capture nonlinear effects, richer features such as review text or update history, and a proper error analysis to see which kinds of apps the models get most wrong.</p>
+
+        <p class="credit">
+          <strong>Team (Group 7):</strong> Alexander, Avani, Brooke, Deniz, and Matt.<br>
+          CS 4641 Machine Learning, Georgia Tech, Spring 2024.
+        </p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="label">&copy; 2026 Deniz Timurturkan</p>
+      <p class="label"><a href="../../" class="link">Home</a></p>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/theme.js"></script>
+</body>
+</html>
