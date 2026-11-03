@@ -4,7 +4,7 @@
 Checks for:
   - photo metadata (GPS, camera, dates) in JPEG, PNG, and WebP files
   - file types that shouldn't be public (HEIC/RAW photos, PDFs, Office docs,
-    keys, .env, .DS_Store)
+    keys, .env, .DS_Store, Claude Code config and skills)
   - phone numbers, API keys, and private keys in text files
 
 Usage:
@@ -21,7 +21,8 @@ import sys
 
 BLOCKED_EXT = re.compile(
     r'\.(heic|heif|tiff?|dng|cr2|nef|arw|raw|pdf|docx?|xlsx?|pptx?|key|pem|p12|pfx|env)$', re.I)
-BLOCKED_NAME = re.compile(r'(^|/)(\.DS_Store|\.env(\..*)?|id_rsa.*|id_ed25519.*)$')
+BLOCKED_NAME = re.compile(
+    r'(^|/)(\.DS_Store|\.env(\..*)?|id_rsa.*|id_ed25519.*|CLAUDE(\.local)?\.md)$|(^|/)\.claude/')
 TEXT_EXT = re.compile(r'\.(html?|css|js|json|md|txt|ya?ml|xml|svg)$', re.I)
 
 TEXT_PATTERNS = {
