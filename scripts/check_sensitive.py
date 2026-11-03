@@ -2,7 +2,9 @@
 """Block personal data from being published on the site.
 
 Checks for:
-  - photo metadata (GPS, camera, dates) in JPEG, PNG, and WebP files
+  - photo metadata (GPS, camera, dates) in JPEG, PNG, and WebP files. With
+    KEEP_CREDITS on, artist/credit metadata is allowed and only location,
+    serial numbers, and computer file paths are blocked.
   - file types that shouldn't be public (HEIC/RAW photos, PDFs, Office docs,
     keys, .env, .DS_Store, Claude Code config and skills)
   - phone numbers, API keys, and private keys in text files
@@ -18,6 +20,11 @@ import re
 import struct
 import subprocess
 import sys
+
+# Art sites: keep authorship metadata on images so the artist can prove the
+# work is theirs. Only metadata that identifies where/who (GPS, device serial,
+# file paths with usernames) is blocked.
+KEEP_CREDITS = False
 
 BLOCKED_EXT = re.compile(
     r'\.(heic|heif|tiff?|dng|cr2|nef|arw|raw|pdf|docx?|xlsx?|pptx?|key|pem|p12|pfx|env)$', re.I)
@@ -93,6 +100,77 @@ def image_metadata(data):
     return []
 
 
+def metadata_payloads(data):
+    """Yield ('exif', tiff_bytes) and ('text', bytes) for each metadata block."""
+    kind = image_kind(data)
+    if kind == 'jpeg':
+        for marker, span in jpeg_segments(data):
+            if marker in JPEG_META:
+                seg = data[span[0] + 4:span[1]]
+                if seg.startswith(b'Exif\0\0'):
+                    yield 'exif', seg[6:]
+                else:
+                    yield 'text', seg
+    elif kind == 'png':
+        for t, (a, b) in png_chunks(data):
+            if t in PNG_META:
+                yield ('exif' if t == b'eXIf' else 'text'), data[a + 8:b - 4]
+    elif kind == 'webp':
+        for t, (a, b) in webp_chunks(data):
+            if t in WEBP_META:
+                payload = data[a + 8:b]
+                if t == b'EXIF' and payload.startswith(b'Exif\0\0'):
+                    payload = payload[6:]
+                yield ('exif' if t == b'EXIF' else 'text'), payload
+
+
+def exif_tags(tiff):
+    """Return {tag: (count, value_bytes)} from IFD0 and the Exif sub-IFD."""
+    if len(tiff) < 8 or tiff[:2] not in (b'II', b'MM'):
+        return {}, '<'
+    e = '<' if tiff[:2] == b'II' else '>'
+    tags = {}
+
+    def ifd(off, depth):
+        if depth > 2 or off + 2 > len(tiff):
+            return
+        for k in range(struct.unpack(e + 'H', tiff[off:off + 2])[0]):
+            entry = tiff[off + 2 + 12 * k:off + 14 + 12 * k]
+            if len(entry) < 12:
+                return
+            tag, _, count = struct.unpack(e + 'HHI', entry[:8])
+            tags[tag] = (count, entry[8:])
+            if tag == 0x8769:
+                ifd(struct.unpack(e + 'I', entry[8:])[0], depth + 1)
+
+    ifd(struct.unpack(e + 'I', tiff[4:8])[0], 0)
+    return tags, e
+
+
+def identifying_metadata(data):
+    found = set()
+    for kind, payload in metadata_payloads(data):
+        if kind == 'exif':
+            tags, e = exif_tags(payload)
+            if 0x8825 in tags:
+                off = struct.unpack(e + 'I', tags[0x8825][1])[0]
+                if off + 2 <= len(payload) and struct.unpack(e + 'H', payload[off:off + 2])[0] > 1:
+                    found.add('GPS location')
+            if 0xA431 in tags:
+                found.add('device serial number')
+            if 0xA430 in tags:
+                found.add('camera owner name')
+        else:
+            text = payload.decode('latin1')
+            if re.search(r'GPS(Latitude|Longitude)', text):
+                found.add('GPS location')
+            if re.search(r'SerialNumber', text):
+                found.add('device serial number')
+            if re.search(r'(/Users/|/home/|[A-Za-z]:\\\\?Users\\)', text):
+                found.add('computer file path')
+    return sorted(found)
+
+
 def strip(data):
     kind = image_kind(data)
     if kind == 'jpeg':
@@ -125,8 +203,11 @@ def check(paths, read):
             continue
         data = read(path)
         if image_kind(data):
-            meta = image_metadata(data)
-            if meta:
+            meta = identifying_metadata(data) if KEEP_CREDITS else image_metadata(data)
+            if meta and KEEP_CREDITS:
+                problems.append(f'{path}: identifying image metadata ({", ".join(meta)}). '
+                                f'Re-export without location, or strip everything with --strip')
+            elif meta:
                 problems.append(f'{path}: image metadata ({", ".join(meta)}). '
                                 f'Fix: python3 scripts/check_sensitive.py --strip {path}')
         elif TEXT_EXT.search(path):
