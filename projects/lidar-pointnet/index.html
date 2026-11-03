@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classifying Lidar Objects — Deniz Timurturkan</title>
+  <meta name="description" content="Georgia Tech computer vision project: classifying self-driving lidar point clouds into 20 object types with PointNet, compared against a voxel-grid baseline.">
+  <meta property="og:title"       content="Classifying self-driving lidar objects with PointNet">
+  <meta property="og:description" content="Georgia Tech Computer Vision project, Fall 2024.">
+  <meta property="og:type"        content="article">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%236b2fa8'/><text x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'>dt</text></svg>">
+
+  <script>try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/variables.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/case-study.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="../../" class="site-name">deniz<span>.</span>timurturkan</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../../#work" class="nav-section">Work</a>
+        <a href="../../#experience" class="nav-section">Experience</a>
+        <a href="../../#about" class="nav-section">About</a>
+        <a href="../../#contact">Contact</a>
+        <button class="theme-toggle" aria-label="Toggle dark mode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="case">
+      <a href="../../#work" class="back-link">← All work</a>
+
+      <p class="label">Computer vision · Georgia Tech CS 4476</p>
+      <h1 class="case-title">Classifying self-driving lidar objects with PointNet</h1>
+      <p class="case-lede">A self-driving car's lidar sees the world as a cloud of 3D points, not pixels. I trained a network to look at one of those point clouds and say what it is: a pedestrian, a bus, a stop sign, or one of 17 other things.</p>
+
+      <dl class="case-facts">
+        <div><dt class="label">Type</dt><dd>Individual course project</dd></div>
+        <div><dt class="label">Timeline</dt><dd>Fall 2024</dd></div>
+        <div><dt class="label">Data</dt><dd>Argoverse 2 lidar, 20 classes</dd></div>
+        <div><dt class="label">Tools</dt><dd>Python, PyTorch</dd></div>
+      </dl>
+
+      <div class="case-body">
+
+        <h2>The problem</h2>
+        <p>Image models work on a neat grid of pixels. Lidar gives you something messier: an unordered set of points in 3D space, where the same car can show up as 30 points or 200 depending on how far away it is. A model for this data has to give the same answer no matter what order the points arrive in.</p>
+        <p>The data came from the Argoverse 2 self-driving dataset, with individual objects already cut out of full street scans: 4,000 objects across 20 classes, 3,400 for training and 600 held out for testing.</p>
+
+        <h2>Two approaches</h2>
+        <ul>
+          <li><strong>Baseline: voxel grid.</strong> Chop the space around each object into small cubes, count how many points land in each cube, and feed those counts to a simple classifier. Easy, but it throws away fine detail and depends on exactly where the cube edges fall.</li>
+          <li><strong>PointNet.</strong> Run every point through the same small neural network, then combine all of them with a max-pool. Because max doesn't care about order, the network handles unordered points naturally, and it learns its own features from the raw coordinates.</li>
+        </ul>
+
+        <h2>Results</h2>
+        <div class="table-wrap">
+          <table class="results">
+            <thead>
+              <tr><th scope="col">Model</th><th scope="col">Training accuracy (last epoch)</th><th scope="col">Test accuracy (best)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Voxel grid baseline</td><td class="num">81.8%</td><td class="num">36.0%</td></tr>
+              <tr class="hl"><td>PointNet</td><td class="num">88.5%</td><td class="num">63.5%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="label figure-caption">20 classes, so random guessing would score 5%. Both models trained for 15 epochs, keeping the checkpoint with the best test accuracy.</p>
+
+        <p>PointNet nearly doubled the baseline. The baseline also shows a classic warning sign: it got better and better on the training data while its test loss kept climbing. It was memorizing which cubes were filled, not learning shapes. PointNet's training and test numbers stayed much closer together.</p>
+
+        <h2>Where it gets confused</h2>
+        <figure>
+          <div class="case-figure">
+            <img src="confusion-matrix.png" alt="Confusion matrix for PointNet across 20 classes. Construction barrels, construction cones, motorcycles, motorcyclists, stop signs, and vehicular trailers are classified perfectly. Buses, trucks, and box trucks are often confused with each other and with regular vehicles. Wheeled riders are mostly predicted as motorcyclists." width="993" height="972" loading="lazy">
+          </div>
+          <figcaption class="label figure-caption">PointNet confusion matrix on the test set. Rows are the true class, columns are the prediction.</figcaption>
+        </figure>
+
+        <p>The mistakes make sense once you think about what lidar sees:</p>
+        <ul>
+          <li><strong>Small, distinctive shapes are easy.</strong> Construction cones, barrels, stop signs, motorcycles, and trailers were classified perfectly.</li>
+          <li><strong>Big vehicles blur together.</strong> Only 13% of buses were labeled correctly, and they were often called box trucks. Each sample is a 4 m cube, so a bus or truck is cut off and only part of it is visible. Partial boxy shapes look alike.</li>
+          <li><strong>Riders get mixed up.</strong> 77% of "wheeled riders" were predicted as motorcyclists. From a few dozen points, a person on a scooter and a person on a motorcycle are nearly the same shape.</li>
+        </ul>
+
+        <h2>What I'd try next</h2>
+        <p>The usual next step is a T-Net, a small network that learns to rotate each point cloud into a standard pose before classifying it. That should help with objects seen from odd angles. For the big vehicles, the bigger win would probably come from the data itself: larger crops, or adding lidar intensity as an input, so a truck isn't reduced to a cropped box.</p>
+
+        <p class="credit">
+          CS 4476 Computer Vision, Georgia Tech, Fall 2024. Dataset: Argoverse 2 Sensor Dataset.<br>
+          Course code is not shared publicly, per the Georgia Tech Honor Code.
+        </p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="label">&copy; 2026 Deniz Timurturkan</p>
+      <p class="label"><a href="../../" class="link">Home</a></p>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/theme.js"></script>
+</body>
+</html>
